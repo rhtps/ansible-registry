@@ -1,0 +1,21 @@
+galaxy_info:
+  author: Matt Bagnara
+  description: Installs docker-registry and loads images from the tarballs in a disconnected way.
+  company: RedHat
+
+  license: license (GPLv2)
+
+  min_ansible_version: 1.6
+
+  platforms:
+  - name: EL
+    versions:
+    - 6
+    - 7
+  galaxy_tags: 
+  - docker
+  - registry
+  - EL
+  - Red Hat
+  - disconnected
+dependencies: []
