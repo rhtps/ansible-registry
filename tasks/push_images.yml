@@ -1,0 +1,27 @@
+---
+
+# ignore_errors because not fixed in 1.9 and won't be fixed
+- name: load docker images from tarball
+  become: yes
+  shell: "docker load -i {{ ose_images_tar_path }}{{ item.key }}"
+  with_dict: "{{ ose_images_tar }}"
+  when: ose_images_tar is undefined
+
+- name: tag the imported images
+  become: yes
+  shell:  'docker tag -f registry.access.redhat.com/{{item.key }}:{{ item.value }} {{ inventory_hostname }}:5000/{{ item.key }}:{{ item.value }}'
+  with_dict: "{{ ose_images }}"
+  when: ose_images is defined
+
+- name: push the imported images to docker-registry
+  become: yes
+  shell:  'docker push {{ inventory_hostname }}:5000/{{ item.key }}:{{ item.value }}'
+  with_dict: "{{ ose_images }}"
+  when: ose_images is defined
+
+# remove the -3 to fix bug in OSE 3.2
+- name: tag the imported images
+  become: yes
+  shell: 'docker tag -f {{ inventory_hostname }}:5000/{{item.key }}:{{ item.value }} {{ inventory_hostname }}:5000/{{ item.key }}:{{ item.value.replace("-3","") }}'
+  with_dict: "{{ ose_images }}"
+  when: ose_images is defined

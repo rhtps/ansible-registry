@@ -1,0 +1,13 @@
+---
+# tasks file for ansible-registry
+- name: debug registry path
+  debug: msg="{{ registry_path }}"
+  tags: 
+  - registry-debug
+
+- name: Initialize Docker
+  include: docker.yml
+
+- name: push images
+  include: push_images.yml
+
