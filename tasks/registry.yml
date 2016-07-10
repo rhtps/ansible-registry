@@ -1,0 +1,131 @@
+---
+# tasks file for registry
+- name: install docker and registry
+  yum:
+    name: docker, docker-registry
+    state: present
+
+- name: enable insecure registries
+  lineinfile:
+    dest: /etc/sysconfig/docker
+    regexp: "^# INSECURE_REGISTRY"
+    line: "INSECURE_REGISTRY='--insecure-registry 0.0.0.0/0'"
+    state: present
+
+- name: set up docker storage
+  connection: local
+  template: src=docker-storage-setup.j2 dest=./roles/registry/files/docker-storage-setup
+
+- name: copy docker-storage-setup
+  copy:
+    src: docker-storage-setup
+    dest: /etc/sysconfig/docker-storage-setup
+    owner: root
+    mode: 0644
+
+- name: execute docker-storage-setup
+  command: docker-storage-setup
+
+- name: start docker daemon
+  service:
+    name: docker
+    state: restarted
+    enabled: yes
+
+- name: set up docker registry search backend
+  lineinfile:
+    dest: /etc/sysconfig/docker-registry
+    line: "SEARCH_BACKEND=sqlalchemy"
+    state: present
+
+- name: start docker registry daemon
+  service:
+    name: docker-registry
+    state: started
+    enabled: yes
+
+#- name: copy docker images
+#  copy:
+#    src: docker.tar.gz
+#    dest: "{{ docroot }}/docker.tar.gz"
+#  when: not retrieve_from_s3
+#
+#- name: copy docker images from s3
+#  command: "aws s3 cp {{ docker_tarball_s3 }} ."
+#  args:
+#    chdir: "{{ docroot }}"
+#    creates: "{{ docroot }}/docker.tar.gz"
+#  when: retrieve_from_s3
+#
+#- name: untar docker images
+#  command: "tar xzf {{ docroot }}/docker.tar.gz"
+#  args:
+#    chdir: "{{ docroot }}"
+#  async: 1200
+#  poll: 60
+#
+#- set_fact:
+#    registry_fqdn: "{{ ansible_fqdn }}"
+#
+#- name: run docker_load template
+#  connection: local
+#  template: src=docker_load.j2 dest=./roles/registry/files/docker_load.sh
+#
+#- name: copy docker_load.sh
+#  copy:
+#    src: docker_load.sh
+#    dest: /data/docker_load.sh
+#    mode: 0755
+#
+#- name: install Perl for use in next script
+#  yum:
+#    name: perl
+#    state: present
+#
+#- name: run docker_load.sh
+#  command: /data/docker_load.sh
+
+- name: install Docker python module
+  yum:
+    name: python-docker-py
+    state: present
+
+- name: copy docker_sync.py
+  copy:
+    src: docker_sync.py
+    dest: /root/docker_sync.py
+    mode: 0700
+    owner: root
+
+- name: execute docker_sync.py
+  command: "python docker_sync.py"
+  args:
+    chdir: "/root"
+  async: 1200
+  poll: 60
+
+- name: create docroot docker dir
+  file:
+    path: "{{ docroot_dir }}/docker"
+    state: directory
+    mode: 0755
+
+- name: copy docker_dump template
+  template:
+    src: docker_dump.j2
+    dest: /root/docker_dump.sh
+    mode: 0700
+    owner: root
+
+- name: run docker_dump.sh
+  command: "/root/docker_dump.sh"
+  async: 1200
+  poll: 60
+
+- name: tar up docker images
+  command: "tar czf {{ docroot_dir }}/docker.tar.gz docker"
+  args:
+    chdir: "{{ docroot_dir }}"
+  async: 1200
+  poll: 60
+
