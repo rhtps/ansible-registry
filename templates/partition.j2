@@ -1,0 +1,6 @@
+#!/bin/bash
+
+if [ ! -b {{ registry_vol }}1 ]
+then
+    (echo n; echo p; echo; echo; echo; echo w) | fdisk {{ registry_vol }}
+fi

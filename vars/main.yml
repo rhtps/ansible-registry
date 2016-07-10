@@ -3,3 +3,4 @@
 retrieve_from_s3: true
 docker_tarball_s3: "s3://{{ cluster_id }}/docker.tar.gz"
 docker_vol: /dev/xvdc
+registry_vol: /dev/xvdd
