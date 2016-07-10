@@ -148,25 +148,3 @@
   async: 1200
   poll: 60
 
-- name: Build partition script
-  template:
-    src: partition.j2
-    dest: /tmp/partition.sh
-    owner: root
-    mode: 0700
-
-- name: Execute the partition script
-  command: /tmp/partition.sh
-
-- name: Format EBS volume
-  filesystem:
-    fstype: xfs
-    dev: "{{ registry_vol }}1"
-    force: no
-
-- name: Mount the volume
-  mount:
-    name: "/var/lib/docker-registry"
-    src: "{{ registry_vol }}1"
-    fstype: xfs
-    state: mounted

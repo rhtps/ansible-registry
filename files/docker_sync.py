@@ -26,3 +26,5 @@ for image in all_images['results']:
             print(tag + ' ', end='')
             cli.pull('registry.access.redhat.com/' + image_name, tag)
         print('\n', end='')
+
+# TODO left off here -- need to push images into local registry
