@@ -116,12 +116,14 @@
     mode: 0700
     owner: root
 
-- name: execute docker_sync.py
+- name: execute docker_sync.py (can take up to an hour)
   command: "python docker_sync.py"
   args:
     chdir: "/root"
   async: 3600
   poll: 60
+  tags:
+    - docker_sync
 
 - name: create docroot docker dir
   file:
@@ -136,15 +138,15 @@
     mode: 0700
     owner: root
 
-- name: run docker_dump.sh
+- name: run docker_dump.sh (can take up to an hour)
   command: "/root/docker_dump.sh"
-  async: 1200
+  async: 3600
   poll: 60
 
-- name: tar up docker images
+- name: tar up docker images (can take up to an hour)
   command: "tar czf {{ docroot_dir }}/docker.tar.gz docker"
   args:
     chdir: "{{ docroot_dir }}"
-  async: 1200
+  async: 3600
   poll: 60
 
