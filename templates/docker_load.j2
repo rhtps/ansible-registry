@@ -1,0 +1,9 @@
+#!/bin/bash
+
+IFS=$'\n'
+for image in `docker images | grep -v ^REPOSITORY | awk '{ print $1":"$2" "$3 }' | perl -pe 's|^.*?/|\1|'`; do
+    name=`echo ${image} | awk '{print $1}'`
+    id=`echo ${image} | awk '{print $2}'`
+    docker tag ${id} {{ ec2_private_dns_name }}:5000/${name}
+    docker push {{ ec2_private_dns_name }}:5000/${name}
+done

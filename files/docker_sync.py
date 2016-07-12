@@ -25,6 +25,9 @@ for image in all_images['results']:
         for tag in all_tags:
             print(tag + ' ', end='')
             cli.pull('registry.access.redhat.com/' + image_name, tag)
+            # The push isn't working. For some reason latest_id doesn't jive
+            # with what I'm expecting it to be. For now we'll use the older
+            # docker_load.sh method.
+            # cli.tag(image_name, 'localhost:5000', tag)
+            # cli.push('localhost:5000', image_name, tag, insecure_registry=True)
         print('\n', end='')
-
-# TODO left off here -- need to push images into local registry

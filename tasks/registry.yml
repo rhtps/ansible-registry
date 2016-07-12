@@ -116,14 +116,26 @@
     mode: 0700
     owner: root
 
-- name: execute docker_sync.py (can take up to an hour)
+- name: execute docker_sync.py (can take up to two hours)
   command: "python docker_sync.py"
   args:
     chdir: "/root"
-  async: 3600
+  async: 7200
   poll: 60
   tags:
     - docker_sync
+
+- name: upload the docker_load script
+  template:
+    src: docker_load.j2
+    dest: /root/docker_load.sh
+    owner: root
+    mode: 0700
+
+- name: run the docker_load script (can take up to an hour)
+  command: /root/docker_load.sh
+  async: 3600
+  poll: 60
 
 - name: create docroot docker dir
   file:
