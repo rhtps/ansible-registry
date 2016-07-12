@@ -142,6 +142,8 @@
   command: "/root/docker_dump.sh"
   async: 3600
   poll: 60
+  tags:
+    - docker_dump
 
 - name: tar up docker images (can take up to an hour)
   command: "tar czf {{ docroot_dir }}/docker.tar.gz docker"
@@ -149,4 +151,6 @@
     chdir: "{{ docroot_dir }}"
   async: 3600
   poll: 60
+  tags:
+    - docker_tar
 
