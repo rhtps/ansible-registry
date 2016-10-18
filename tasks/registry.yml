@@ -132,9 +132,9 @@
     owner: root
     mode: 0700
 
-- name: run the docker_load script (can take up to an hour)
+- name: run the docker_load script (can take up to 2 hours)
   command: /root/docker_load.sh
-  async: 3600
+  async: 7200
   poll: 60
 
 - name: create docroot docker dir
