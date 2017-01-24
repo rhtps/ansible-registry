@@ -39,3 +39,4 @@ for image in all_images['results']:
                 # cli.tag(image_name, 'localhost:5000', tag)
                 # cli.push('localhost:5000', image_name, tag, insecure_registry=True)
             # print('\n', end='')
+
